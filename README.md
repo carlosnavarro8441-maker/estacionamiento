@@ -1,8 +1,14 @@
-#Sistema de Estacionamiento Público
+# Sistema de Estacionamiento Público
 
-## Cómo ponerlo a funcionar en tu computadora
-1. Clona este repositorio dentro de tu carpeta `htdocs` de XAMPP.
-2. Inicia **Apache** y **MySQL** en XAMPP.
-3. Entra a `http://localhost/phpmyadmin`, crea una base de datos llamada `estacionamiento_publico` e importa el archivo `database/estacionamiento_publico.sql`.
-4. Ve a la carpeta `config/`, copia `conexion.example.php` y cámbiale el nombre a `conexion.php` (ajusta tu usuario/contraseña de MySQL si tienes).
-5. Abre `http://localhost/Estacionamiento/` en tu navegador (Usuario de prueba: `admin` / Contraseña: `12345`).
+## Instalación rápida (4 pasos)
+1. Descarga o clona este repositorio dentro de tu carpeta `htdocs` de XAMPP.
+2. Enciende **Apache** y **MySQL** en XAMPP.
+3. Abre `http://localhost/phpmyadmin`, crea la base de datos **`estacionamiento_publico`** e importa **`database/estacionamiento_publico.sql`**.
+4. Entra en tu navegador a `http://localhost/Estacionamiento-P-blico/` e inicia sesión con:
+   - **Usuario:** `admin`
+   - **Contraseña:** `12345`
+
+## División de módulos (`modules/`)
+- `dashboard.php` -> Control de entradas y salidas
+- `cobros.php` -> Cálculo de tarifas y pagos
+- `pensiones.php` -> Clientes frecuentes y mensualidades

@@ -72,7 +72,7 @@ CREATE TABLE `cobros` (
   CONSTRAINT `cobros_ibfk_1` FOREIGN KEY (`servicio_id`) REFERENCES `servicios` (`servicio_id`),
   CONSTRAINT `cobros_ibfk_2` FOREIGN KEY (`metodo_pago_id`) REFERENCES `metodos_pago` (`metodo_pago_id`),
   CONSTRAINT `cobros_ibfk_3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,6 +81,7 @@ CREATE TABLE `cobros` (
 
 LOCK TABLES `cobros` WRITE;
 /*!40000 ALTER TABLE `cobros` DISABLE KEYS */;
+INSERT INTO `cobros` VALUES (1,1,1,30.00,'2026-11-22 14:39:39',1,1),(2,3,1,30.00,'2026-11-22 14:57:49',1,1),(3,5,1,30.00,'2026-11-22 15:11:45',1,1),(4,4,1,40.00,'2026-11-22 15:36:46',1,1);
 /*!40000 ALTER TABLE `cobros` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,7 +104,7 @@ CREATE TABLE `cobros_detalle` (
   KEY `tarifa_id` (`tarifa_id`),
   CONSTRAINT `cobros_detalle_ibfk_1` FOREIGN KEY (`cobro_id`) REFERENCES `cobros` (`cobro_id`),
   CONSTRAINT `cobros_detalle_ibfk_2` FOREIGN KEY (`tarifa_id`) REFERENCES `tarifas` (`tarifa_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,6 +113,7 @@ CREATE TABLE `cobros_detalle` (
 
 LOCK TABLES `cobros_detalle` WRITE;
 /*!40000 ALTER TABLE `cobros_detalle` DISABLE KEYS */;
+INSERT INTO `cobros_detalle` VALUES (2,2,1,1,30.00,30.00),(3,3,1,1,30.00,30.00),(4,4,1,1,40.00,40.00);
 /*!40000 ALTER TABLE `cobros_detalle` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,7 +322,7 @@ CREATE TABLE `servicios` (
   CONSTRAINT `servicios_ibfk_3` FOREIGN KEY (`pension_id`) REFERENCES `pensiones` (`pension_id`),
   CONSTRAINT `servicios_ibfk_4` FOREIGN KEY (`usuario_entrada_id`) REFERENCES `usuarios` (`usuario_id`),
   CONSTRAINT `servicios_ibfk_5` FOREIGN KEY (`usuario_salida_id`) REFERENCES `usuarios` (`usuario_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -329,6 +331,7 @@ CREATE TABLE `servicios` (
 
 LOCK TABLES `servicios` WRITE;
 /*!40000 ALTER TABLE `servicios` DISABLE KEYS */;
+INSERT INTO `servicios` VALUES (1,1,1,NULL,'2026-11-22 14:19:01','2026-11-22 14:39:39',1,1),(2,2,1,NULL,'2026-11-22 14:30:53',NULL,1,NULL),(3,3,1,NULL,'2026-11-22 14:57:36','2026-11-22 14:57:49',1,1),(4,4,1,NULL,'2026-11-22 15:11:13','2026-11-22 15:36:46',1,1),(5,5,1,NULL,'2026-11-22 15:11:17','2026-11-22 15:11:45',1,1);
 /*!40000 ALTER TABLE `servicios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -353,7 +356,7 @@ CREATE TABLE `tarifas` (
   KEY `tipo_cliente_id` (`tipo_cliente_id`),
   CONSTRAINT `tarifas_ibfk_1` FOREIGN KEY (`tipo_servicio_id`) REFERENCES `tipos_servicio` (`tipo_servicio_id`),
   CONSTRAINT `tarifas_ibfk_2` FOREIGN KEY (`tipo_cliente_id`) REFERENCES `tipos_cliente` (`tipo_cliente_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -362,6 +365,7 @@ CREATE TABLE `tarifas` (
 
 LOCK TABLES `tarifas` WRITE;
 /*!40000 ALTER TABLE `tarifas` DISABLE KEYS */;
+INSERT INTO `tarifas` VALUES (1,1,1,1,5,40.00,'hora',1),(2,1,1,6,NULL,25.00,'hora',1),(3,1,2,1,5,26.00,'hora',1),(4,1,2,6,NULL,22.00,'hora',1);
 /*!40000 ALTER TABLE `tarifas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -466,7 +470,7 @@ CREATE TABLE `vehiculos` (
   UNIQUE KEY `matricula` (`matricula`),
   KEY `cliente_id` (`cliente_id`),
   CONSTRAINT `vehiculos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`cliente_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -475,6 +479,7 @@ CREATE TABLE `vehiculos` (
 
 LOCK TABLES `vehiculos` WRITE;
 /*!40000 ALTER TABLE `vehiculos` DISABLE KEYS */;
+INSERT INTO `vehiculos` VALUES (1,'JLLAJ6','Por definir','Por definir','Por definir',NULL),(2,'JAJA23','Por definir','Por definir','Por definir',NULL),(3,'JSOJDAN','Por definir','Por definir','Por definir',NULL),(4,'JSWQHDB','Por definir','Por definir','Por definir',NULL),(5,'LKDQWNB','Por definir','Por definir','Por definir',NULL);
 /*!40000 ALTER TABLE `vehiculos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -487,20 +492,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-17 17:03:14
--- Corregir acentos en tipos_servicio
-UPDATE `tipos_servicio` SET `nombre` = 'cajon' WHERE `tipo_servicio_id` = 1;
-UPDATE `tipos_servicio` SET `nombre` = 'pension' WHERE `tipo_servicio_id` = 2;
-
--- Tarifas iniciales de prueba (Hora 1 a 24 a $20.00 para cliente de paso)
-INSERT INTO `tarifas` (`tipo_servicio_id`, `tipo_cliente_id`, `hora_desde`, `hora_hasta`, `precio`, `unidad`, `activa`) VALUES
-(1, 1, 1, 24, 20.00, 'hora', 1),
-(1, 2, 1, 24, 15.00, 'hora', 1);
-
--- Clientes y vehículos de prueba
-INSERT INTO `clientes` (`nombre`, `telefono`, `email`, `rfc`, `tipo_cliente_id`, `registrado_por`, `fecha_registro`, `activo`) VALUES
-('Carlos Navarro', '3312345678', 'carlos@test.com', 'NACA900101ABC', 2, 1, NOW(), 1);
-
-INSERT INTO `vehiculos` (`matricula`, `marca`, `modelo`, `color`, `cliente_id`) VALUES
-('JLA1234', 'Nissan', 'Versa', 'Gris', 1),
-('JMK9876', 'Chevrolet', 'Aveo', 'Blanco', NULL);
+-- Dump completed on 2026-11-22 15:40:49

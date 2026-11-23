@@ -1,0 +1,75 @@
+
+import unittest
+
+from datetime import date
+from decimal import Decimal
+
+from modelos.pension import calcular_antiguedad
+from modelos.pago_pension import calcular_monto
+
+
+class PruebasPensiones(unittest.TestCase):
+
+    def test_antiguedad_menor_a_dos_anios(self):
+
+        resultado = calcular_antiguedad(
+            date(2024, 12, 1),
+            date(2026, 11, 30)
+        )
+
+        self.assertEqual(resultado, 1)
+
+    def test_antiguedad_exactamente_dos_anios(self):
+
+        resultado = calcular_antiguedad(
+            date(2024, 11, 22),
+            date(2026, 11, 22)
+        )
+
+        self.assertEqual(resultado, 2)
+
+    def test_antiguedad_mayor_a_dos_anios(self):
+
+        resultado = calcular_antiguedad(
+            date(2023, 11, 22),
+            date(2026, 11, 22)
+        )
+
+        self.assertEqual(resultado, 3)
+
+    def test_calculo_sin_descuento(self):
+
+        resultado = calcular_monto(
+            "1000.00",
+            0
+        )
+
+        self.assertEqual(
+            resultado,
+            Decimal("1000.00")
+        )
+
+    def test_calculo_con_descuento(self):
+
+        resultado = calcular_monto(
+            "1000.00",
+            10
+        )
+
+        self.assertEqual(
+            resultado,
+            Decimal("900.00")
+        )
+
+    def test_rechaza_descuento_invalido(self):
+
+        with self.assertRaises(ValueError):
+
+            calcular_monto(
+                "1000.00",
+                101
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()

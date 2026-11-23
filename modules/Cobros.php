@@ -68,7 +68,7 @@ $servicio_id = $_GET['servicio_id'] ?? $_POST['servicio_id'];
 // Buscamos el servicio vehiculo y si su cliente es frecuente o de paso
 $sql = "SELECT s.servicio_id, s.fecha_hora_entrada, v.matricula,
         COALESCE(tc.nombre, 'paso') AS tipo_cliente,
-        TIMESTAMPDIFF(HOUR, s.fecha_hora_entrada, NOW()) AS horas_transcurridas
+        CEIL(TIMESTAMPDIFF(SECOND, s.fecha_hora_entrada, NOW()) / 3600) AS horas_transcurridas
         FROM servicios s
         INNER JOIN vehiculos v ON s.vehiculo_id = v.vehiculo_id
         LEFT JOIN clientes c ON v.cliente_id = c.cliente_id

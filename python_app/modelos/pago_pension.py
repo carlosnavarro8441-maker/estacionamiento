@@ -3,7 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal, ROUND_HALF_UP
 
 from db.conexion import obtener_conexion
-from modelos.pension import calcular_antiguedad
+from modelos.pension import elegir_descuento, listar_descuentos_activos
 
 
 def calcular_monto(monto_base, porcentaje=0):
@@ -105,21 +105,11 @@ def registrar_pago(
                 "Ya existe un pago que se cruza con ese periodo."
             )
 
-        # Calcular antigüedad
-        anios = calcular_antiguedad(
+        # Descuento: solo si la pensión lleva MÁS de 2 años (según la tabla)
+        descuento = elegir_descuento(
+            listar_descuentos_activos(cur),
             pension["fecha_inicio"]
         )
-
-        # Buscar descuento
-        cur.execute(
-            "SELECT descuento_id, porcentaje "
-            "FROM descuentos_pension "
-            "WHERE activo=1 AND anios_minimos < %s "
-            "ORDER BY anios_minimos DESC LIMIT 1",
-            (anios,)
-        )
-
-        descuento = cur.fetchone()
 
         porcentaje = (
             descuento["porcentaje"]

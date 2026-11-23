@@ -16,6 +16,22 @@ def _clave_correcta(ingresada, guardada):
     return ingresada == guardada
 
 
+def _cifrar_clave(usuario_id, password):
+    """Reemplaza una contraseña en texto plano por su hash bcrypt ($2y$, compatible con PHP)."""
+    if len(password.encode()) > 72:
+        return
+    hash_nuevo = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    hash_nuevo = hash_nuevo.replace("$2b$", "$2y$", 1)
+    con = obtener_conexion()
+    try:
+        cur = con.cursor()
+        cur.execute("UPDATE usuarios SET password_hash = %s WHERE usuario_id = %s",
+                    (hash_nuevo, usuario_id))
+        con.commit()
+    finally:
+        con.close()
+
+
 def iniciar_sesion(username, password):
     """Devuelve un dict con los datos del usuario, o None si falla."""
     con = obtener_conexion()
@@ -35,6 +51,10 @@ def iniciar_sesion(username, password):
         return None
     if not _clave_correcta(password, fila["password_hash"]):
         return None
+
+    # Si la contraseña seguía en texto plano, se guarda ya cifrada (bcrypt)
+    if not fila["password_hash"].startswith("$2"):
+        _cifrar_clave(fila["usuario_id"], password)
 
     return {
         "id": fila["usuario_id"],

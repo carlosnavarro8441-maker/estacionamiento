@@ -16,6 +16,16 @@ class Pantalla(ttk.Frame):
 
         super().__init__(padre, padding=15)
 
+        # Segunda barrera de seguridad: solo el admin puede ver esta pantalla
+        if not sesion.es_admin():
+            ttk.Label(
+                self,
+                text="No tienes permiso para ver esta pantalla",
+                bootstyle="danger",
+                font=(FUENTE, 14)
+            ).pack(pady=40)
+            return
+
         self.seleccion = None
 
         ttk.Label(

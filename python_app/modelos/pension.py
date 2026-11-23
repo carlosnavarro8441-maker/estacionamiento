@@ -139,30 +139,67 @@ def calcular_antiguedad(fecha_inicio, fecha_referencia=None):
     return max(anios, 0)
 
 
-def obtener_descuento(fecha_inicio, fecha_referencia=None):
+def sumar_anios(fecha, anios):
+    """Misma fecha dentro de `anios` años (el 29 de febrero pasa al 28 si hace falta)."""
+    try:
+        return fecha.replace(year=fecha.year + anios)
+    except ValueError:
+        return fecha.replace(year=fecha.year + anios, day=28)
 
-    anios = calcular_antiguedad(
+
+def tiene_mas_de(fecha_inicio, anios, fecha_referencia=None):
+    """True si la pensión lleva MÁS de `anios` años (estrictamente más).
+
+    Con 2 años exactos todavía no; al día siguiente del aniversario sí.
+    """
+    if isinstance(fecha_inicio, str):
+        fecha_inicio = date.fromisoformat(fecha_inicio)
+    fecha_referencia = fecha_referencia or date.today()
+    return fecha_referencia > sumar_anios(fecha_inicio, anios)
+
+
+def elegir_descuento(descuentos, fecha_inicio, fecha_referencia=None):
+    """Del listado de descuentos activos, devuelve el mayor que le corresponde.
+
+    Regla del proyecto: descuento para clientes con MÁS de 2 años de pensión
+    (los años mínimos y el porcentaje salen de la tabla descuentos_pension).
+    """
+    aplicables = [
+        d for d in descuentos
+        if tiene_mas_de(fecha_inicio, d["anios_minimos"], fecha_referencia)
+    ]
+    if not aplicables:
+        return None
+    return max(aplicables, key=lambda d: d["anios_minimos"])
+
+
+def listar_descuentos_activos(cur=None):
+    """Descuentos activos. Si se pasa un cursor se usa ese (por ejemplo, dentro de una transacción)."""
+    if cur is not None:
+        cur.execute(
+            "SELECT descuento_id, anios_minimos, porcentaje "
+            "FROM descuentos_pension WHERE activo=1"
+        )
+        return cur.fetchall()
+
+    con = obtener_conexion()
+    try:
+        cur = con.cursor(dictionary=True)
+        cur.execute(
+            "SELECT descuento_id, anios_minimos, porcentaje "
+            "FROM descuentos_pension WHERE activo=1"
+        )
+        return cur.fetchall()
+    finally:
+        con.close()
+
+
+def obtener_descuento(fecha_inicio, fecha_referencia=None):
+    return elegir_descuento(
+        listar_descuentos_activos(),
         fecha_inicio,
         fecha_referencia
     )
-
-    con = obtener_conexion()
-
-    try:
-        cur = con.cursor(dictionary=True)
-
-        cur.execute(
-            "SELECT descuento_id, anios_minimos, porcentaje "
-            "FROM descuentos_pension "
-            "WHERE activo=1 AND anios_minimos < %s "
-            "ORDER BY anios_minimos DESC LIMIT 1",
-            (anios,)
-        )
-
-        return cur.fetchone()
-
-    finally:
-        con.close()
 
 
 def guardar(

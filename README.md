@@ -48,16 +48,3 @@ Copia el proyecto dentro de `htdocs` y entra a `http://localhost/Estacionamiento
 |---|---|---|
 | De paso | $30.00 por hora | $25.00 por hora |
 | Frecuente | $26.00 por hora | $22.00 por hora |
-
-Una fracción de hora cuenta como hora completa y siempre se cobra mínimo 1 hora. Los precios viven en la tabla `tarifas` y el administrador los cambia desde la pantalla **Tarifas**.
-
-## Pensiones (requisito 6)
-
-Se controlan por fecha y por vehículo. Las pensiones con **más de 2 años** de antigüedad reciben el descuento de la tabla `descuentos_pension`. El precio mensual y el porcentaje de descuento se configuran en la pantalla **Tarifas** (`ajustes_finales.sql` trae valores de ejemplo).
-
-## Reportes (requisitos 7 a 10, pantalla Reportes, con selector de año)
-
-- Entradas y salidas por mes
-- Meses con mayor demanda
-- Horarios con mayor demanda
-- Ingresos por servicio (cajón y pensión)

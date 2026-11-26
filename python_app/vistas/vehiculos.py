@@ -7,6 +7,12 @@ from controladores import vehiculo_controlador as ctrl
 from vistas.base import FUENTE
 
 SIN_CLIENTE = "Sin cliente (de paso)"
+FILTROS = {
+    "Todos": "todos",
+    "Dentro ahora": "dentro",
+    "Con visitas": "con_visitas",
+    "Sin historial (se pueden eliminar)": "sin_historial",
+}
 
 
 class Pantalla(ttk.Frame):
@@ -53,20 +59,30 @@ class Pantalla(ttk.Frame):
         ttk.Button(botones, text="Guardar", bootstyle="success", width=14,
                    command=self.guardar).pack(side="left", padx=(8, 8))
         ttk.Button(botones, text="Nuevo", bootstyle="secondary-outline", width=14,
-                   command=self.limpiar).pack(side="left")
+                   command=self.limpiar).pack(side="left", padx=(0, 8))
+        ttk.Button(botones, text="Eliminar", bootstyle="danger-outline", width=14,
+                   command=self.eliminar).pack(side="left")
 
     def _armar_tabla(self):
         barra = ttk.Frame(self)
         barra.pack(fill="x")
         ttk.Label(barra, text="Buscar:").pack(side="left")
-        self.busqueda = ttk.Entry(barra, width=30)
+        self.busqueda = ttk.Entry(barra, width=26)
         self.busqueda.pack(side="left", padx=8)
         self.busqueda.bind("<KeyRelease>", lambda e: self.refrescar())
 
-        columnas = ("matricula", "marca", "modelo", "color", "cliente")
+        ttk.Label(barra, text="Mostrar:").pack(side="left", padx=(15, 0))
+        self.filtro = ttk.Combobox(barra, state="readonly", width=32, values=list(FILTROS))
+        self.filtro.set("Todos")
+        self.filtro.pack(side="left", padx=8)
+        self.filtro.bind("<<ComboboxSelected>>", lambda e: self.refrescar())
+
+        columnas = ("matricula", "marca", "modelo", "color", "cliente", "visitas", "estado")
         encabezados = {"matricula": "Matrícula", "marca": "Marca", "modelo": "Modelo",
-                       "color": "Color", "cliente": "Cliente"}
-        anchos = {"matricula": 110, "marca": 130, "modelo": 130, "color": 100, "cliente": 240}
+                       "color": "Color", "cliente": "Cliente", "visitas": "Visitas",
+                       "estado": "Estado"}
+        anchos = {"matricula": 90, "marca": 100, "modelo": 100, "color": 80,
+                  "cliente": 190, "visitas": 60, "estado": 90}
 
         self.tabla = ttk.Treeview(self, columns=columnas, show="headings", height=8,
                                   bootstyle="primary")
@@ -88,11 +104,18 @@ class Pantalla(ttk.Frame):
         for fila in self.tabla.get_children():
             self.tabla.delete(fila)
         self.filas = {}
-        for v in ctrl.listar_vehiculos(self.busqueda.get()):
+        filtro = FILTROS[self.filtro.get()]
+        for v in ctrl.listar_vehiculos(self.busqueda.get(), filtro):
             self.filas[v["vehiculo_id"]] = v
+            if v["dentro"] > 0:
+                estado = "Dentro"
+            elif v["visitas"] > 0:
+                estado = "Fuera"
+            else:
+                estado = "Sin visitas"
             self.tabla.insert("", "end", iid=str(v["vehiculo_id"]), values=(
                 v["matricula"], v["marca"] or "", v["modelo"] or "", v["color"] or "",
-                v["cliente"] or "Sin cliente",
+                v["cliente"] or "Sin cliente", v["visitas"], estado,
             ))
 
     # ---------- Acciones ----------
@@ -106,7 +129,6 @@ class Pantalla(ttk.Frame):
             entrada.delete(0, "end")
             entrada.insert(0, vehiculo[clave] or "")
 
-        # Buscar el texto de la lista que corresponde al cliente del vehículo
         texto = SIN_CLIENTE
         if vehiculo["cliente_id"] is not None:
             texto = next((t for t, i in self.clientes.items() if i == vehiculo["cliente_id"]), None)
@@ -115,7 +137,8 @@ class Pantalla(ttk.Frame):
                 self.clientes[texto] = vehiculo["cliente_id"]
                 self.cliente["values"] = list(self.clientes)
         self.cliente.set(texto)
-        self.estado.config(text=f"Editando vehículo #{self.vehiculo_id}")
+        self.estado.config(text=f"Editando vehículo #{self.vehiculo_id} "
+                                f"({vehiculo['visitas']} visita(s))")
 
     def limpiar(self):
         self.vehiculo_id = None
@@ -138,3 +161,20 @@ class Pantalla(ttk.Frame):
             self.refrescar()
         else:
             messagebox.showwarning("Revisa los datos", mensaje)
+
+    def eliminar(self):
+        if self.vehiculo_id is None:
+            messagebox.showinfo("Vehículos", "Primero elige un vehículo de la tabla")
+            return
+        matricula = self.filas[self.vehiculo_id]["matricula"]
+        if not messagebox.askyesno(
+                "Eliminar", f"¿Eliminar el vehículo {matricula}?\n"
+                            f"Solo se puede si nunca ha tenido visitas ni pensiones."):
+            return
+        ok, mensaje = ctrl.eliminar_vehiculo(self.vehiculo_id)
+        if ok:
+            messagebox.showinfo("Vehículos", mensaje)
+            self.limpiar()
+            self.refrescar()
+        else:
+            messagebox.showwarning("No se pudo eliminar", mensaje)

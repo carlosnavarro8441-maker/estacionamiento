@@ -2,10 +2,14 @@ from db.conexion import obtener_conexion
 
 
 def listar(texto=""):
-    """Lista vehículos con el nombre de su cliente. Busca por matrícula, marca, modelo o cliente."""
+    """Lista vehículos con su cliente, cuántas visitas y pensiones tienen y si están dentro."""
     sql = (
         "SELECT v.vehiculo_id, v.matricula, v.marca, v.modelo, v.color, "
-        "v.cliente_id, c.nombre AS cliente "
+        "v.cliente_id, c.nombre AS cliente, "
+        "(SELECT COUNT(*) FROM servicios s WHERE s.vehiculo_id = v.vehiculo_id) AS visitas, "
+        "(SELECT COUNT(*) FROM pensiones p WHERE p.vehiculo_id = v.vehiculo_id) AS pensiones, "
+        "(SELECT COUNT(*) FROM servicios s WHERE s.vehiculo_id = v.vehiculo_id "
+        " AND s.fecha_hora_salida IS NULL) AS dentro "
         "FROM vehiculos v "
         "LEFT JOIN clientes c ON c.cliente_id = v.cliente_id "
         "WHERE 1 = 1"
@@ -25,6 +29,7 @@ def listar(texto=""):
         return cur.fetchall()
     finally:
         con.close()
+
 
 
 def buscar_por_matricula(matricula):
@@ -85,6 +90,16 @@ def editar(vehiculo_id, matricula, marca, modelo, color, cliente_id):
             "color = %s, cliente_id = %s WHERE vehiculo_id = %s",
             (matricula, marca, modelo, color, cliente_id, vehiculo_id),
         )
+        con.commit()
+    finally:
+        con.close()
+        
+def eliminar(vehiculo_id):
+    """Borra un vehículo. La base lo rechaza si tiene visitas o pensiones."""
+    con = obtener_conexion()
+    try:
+        cur = con.cursor()
+        cur.execute("DELETE FROM vehiculos WHERE vehiculo_id = %s", (vehiculo_id,))
         con.commit()
     finally:
         con.close()

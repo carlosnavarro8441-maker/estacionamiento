@@ -33,7 +33,7 @@ def probar_cobrador():
     sesion.iniciar(COBRADOR)
     assert not sesion.es_admin()
     visibles = modulos_visibles()
-    assert visibles == ["Entradas y salidas", "Clientes", "Vehículos"], visibles
+    assert visibles == ["Entradas y salidas", "Clientes", "Vehículos", "Cajones"], visibles
     for prohibido in ("Pensiones", "Reportes", "Tarifas", "Usuarios"):
         assert prohibido not in visibles, f"El cobrador no debe ver {prohibido}"
 

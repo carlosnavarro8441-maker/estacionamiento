@@ -3,6 +3,8 @@ MODULOS = [
     ("Entradas y salidas", "entrada_salida", False),
     ("Clientes", "clientes", False),
     ("Vehículos", "vehiculos", False),
+    ("Cajones", "cajones", False),
+    ("Capacidad", "capacidad", True),
     ("Pensiones", "pensiones", True),
     ("Reportes", "reportes", True),
     ("Tarifas", "tarifas", True),
